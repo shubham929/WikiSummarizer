@@ -9,14 +9,14 @@ from features import sentencePosition, sectionImportance, tfIDF, positiveNess, n
 
 class Summarizer:
     
-    def __init__(self, title):
+    def __init__(self, title, pos, neg):
         self.lock = threading.Lock()
         self.article = getJSON(title)
         self.title = self.article['title']
         self.titleImp = resultCount(title)
         self.sections = []
-        self.positiveKeywords = ["cricket"]
-        self.negativeKeywords = ["family"]
+        self.positiveKeywords = filter(None, map(type(pos).strip, pos.split(',')))
+        self.negativeKeywords = filter(None, map(type(neg).strip, neg.split(',')))
         for section in self.article['sections']:
             self.sections.append(Section(section))
         self.threshold = 0
@@ -104,7 +104,7 @@ class Summarizer:
             
         return {'data': out}
         
-def getSummary(url):
-    s=Summarizer(url)
+def getSummary(url, pos, neg):
+    s=Summarizer(url, pos, neg)
     s.summarize()
     return s.getScores()
